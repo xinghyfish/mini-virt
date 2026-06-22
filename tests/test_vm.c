@@ -115,6 +115,100 @@ static void test_vm_jmp_abnormal(void)
     ASSERT_TRUE(vm_run(&vm, 10) == VM_ERR_PC_OUT_OF_BOUNDS);
 }
 
+static void test_vm_jz_taken(void)
+{
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 0 },
+        { .opcode = OP_JZ, .src = 0, .immediate = 3 * sizeof(Instruction) },
+        { .opcode = OP_MOVI, .dst = 1, .immediate = 7 },
+        { .opcode = OP_MOVI, .dst = 2, .immediate = 9 },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 5) == VM_OK);
+    ASSERT_TRUE(vm_run(&vm, 10) == VM_OK);
+    ASSERT_TRUE(vm.regs[1] == 0);
+    ASSERT_TRUE(vm.regs[2] == 9);
+    ASSERT_TRUE(vm.running == 0);
+}
+
+static void test_vm_jz_not_taken(void)
+{
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 1 },
+        { .opcode = OP_JZ, .src = 0, .immediate = 3 * sizeof(Instruction) },
+        { .opcode = OP_MOVI, .dst = 1, .immediate = 7 },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 4) == VM_OK);
+    ASSERT_TRUE(vm_run(&vm, 10) == VM_OK);
+    ASSERT_TRUE(vm.regs[1] == 7);
+    ASSERT_TRUE(vm.running == 0);
+}
+
+static void test_vm_jz_invalid_register(void)
+{
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_JZ, .src = VM_REG_COUNT, .immediate = sizeof(Instruction) },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 2) == VM_OK);
+    ASSERT_TRUE(vm_run(&vm, 10) == VM_ERR_INVALID_REGISTER);
+    ASSERT_TRUE(vm.running == 0);
+}
+
+static void test_vm_jz_invalid_target(void)
+{
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 0 },
+        { .opcode = OP_JZ, .src = 0, .immediate = VM_MEMORY_SIZE },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 3) == VM_OK);
+    ASSERT_TRUE(vm_run(&vm, 10) == VM_ERR_PC_OUT_OF_BOUNDS);
+    ASSERT_TRUE(vm.running == 0);
+}
+
+static void test_vm_step_executes_one_instruction(void)
+{
+    // TODO(v0.3): load a short MOVI/ADD/HALT program.
+    // TODO(v0.3): call vm_step once.
+    // TODO(v0.3): assert that only the first instruction changed VM state.
+}
+
+static void test_vm_step_updates_pc(void)
+{
+    // TODO(v0.3): call vm_step and verify pc moves by sizeof(Instruction).
+    // TODO(v0.3): include a jump instruction case where pc changes differently.
+}
+
+static void test_vm_dump_memory_exists(void)
+{
+    // TODO(v0.3): call vm_dump_memory with a valid range.
+    // TODO(v0.3): later, assert invalid ranges return an error.
+}
+
+static void test_vm_dump_instruction_exists(void)
+{
+    // TODO(v0.3): call vm_dump_instruction with one sample instruction.
+    // TODO(v0.3): decide whether output should be visually inspected or captured.
+}
+
 int main(void)
 {
     test_vm_init_clears_state();
@@ -123,6 +217,14 @@ int main(void)
     test_vm_runs_invalid_register();
     test_vm_jmp_normal();
     test_vm_jmp_abnormal();
+    test_vm_jz_taken();
+    test_vm_jz_not_taken();
+    test_vm_jz_invalid_register();
+    test_vm_jz_invalid_target();
+    test_vm_step_executes_one_instruction();
+    test_vm_step_updates_pc();
+    test_vm_dump_memory_exists();
+    test_vm_dump_instruction_exists();
 
     puts("all tests passed");
     return 0;

@@ -30,6 +30,8 @@ VMStatus vm_load_program(VM *vm, const Instruction *program, size_t instruction_
 VMStatus vm_step(VM *vm);
 VMStatus vm_run(VM *vm, size_t max_steps);
 void vm_dump_registers(const VM *vm);
+VMStatus vm_dump_memory(const VM *vm, uint32_t start, size_t length);
+void vm_dump_instruction(const Instruction *instruction);
 const char *vm_status_string(VMStatus status);
 
 #endif

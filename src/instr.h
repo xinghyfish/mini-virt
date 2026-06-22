@@ -8,7 +8,8 @@ typedef enum {
     OP_MOVI = 0x01,
     OP_ADD = 0x02,
     OP_SUB = 0x03,
-    OP_JMP = 0x04
+    OP_JMP = 0x04,
+    OP_JZ = 0x05
 } Opcode;
 
 typedef struct {

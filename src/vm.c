@@ -8,6 +8,11 @@ static int is_valid_register(uint8_t reg)
     return reg < VM_REG_COUNT;
 }
 
+static int is_valid_instruction_address(const VM *vm, uint32_t address)
+{
+    return address < vm->program_size && address % sizeof(Instruction) == 0;
+}
+
 void vm_init(VM *vm)
 {
     memset(vm, 0, sizeof(*vm));
@@ -75,8 +80,26 @@ VMStatus vm_step(VM *vm)
         vm->regs[instr.dst] -= vm->regs[instr.src];
         return VM_OK;
     case OP_JMP:
-        if (instr.immediate >= vm->program_size ||
-            instr.immediate % sizeof(Instruction) != 0) {
+        if (!is_valid_instruction_address(vm, instr.immediate)) {
+            vm->running = 0;
+            return VM_ERR_PC_OUT_OF_BOUNDS;
+        }
+
+        vm->running = 1;
+        vm->pc = instr.immediate;
+        return VM_OK;
+    case OP_JZ:
+        if (!is_valid_register(instr.src)) {
+            vm->running = 0;
+            return VM_ERR_INVALID_REGISTER;
+        }
+
+        if (vm->regs[instr.src] != 0) {
+            vm->running = 1;
+            return VM_OK;
+        }
+
+        if (!is_valid_instruction_address(vm, instr.immediate)) {
             vm->running = 0;
             return VM_ERR_PC_OUT_OF_BOUNDS;
         }
@@ -111,6 +134,25 @@ void vm_dump_registers(const VM *vm)
     for (size_t i = 0; i < VM_REG_COUNT; i++) {
         printf("r%zu=%u\n", i, vm->regs[i]);
     }
+}
+
+VMStatus vm_dump_memory(const VM *vm, uint32_t start, size_t length)
+{
+    (void)vm;
+    (void)start;
+    (void)length;
+
+    // TODO(v0.3): print memory bytes from start to start + length.
+    // TODO(v0.3): reject ranges outside VM_MEMORY_SIZE.
+    return VM_OK;
+}
+
+void vm_dump_instruction(const Instruction *instruction)
+{
+    (void)instruction;
+
+    // TODO(v0.3): print opcode and relevant fields for one instruction.
+    // TODO(v0.3): format jump targets as instruction indexes and byte offsets.
 }
 
 const char *vm_status_string(VMStatus status)

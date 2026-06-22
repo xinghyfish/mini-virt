@@ -7,7 +7,9 @@ Last updated: 2026-06-22
 v0.1 is complete. The VM can build, run, execute a minimal program, handle basic
 arithmetic instructions, and reject invalid register indexes.
 
-v0.2 is in progress. The next focus is control flow.
+v0.2 is complete. The VM supports unconditional and conditional control flow.
+
+v0.3 is in progress. The next focus is debugging tools.
 
 ## Completed
 
@@ -28,6 +30,10 @@ v0.2 is in progress. The next focus is control flow.
 - Added invalid register tests.
 - Implemented `JMP`.
 - Added normal and out-of-bounds `JMP` tests.
+- Implemented `JZ`.
+- Added taken, not-taken, invalid-register, and invalid-target `JZ` tests.
+- Added v0.3 function frames for memory and instruction dumps.
+- Added v0.3 test placeholders for single-step and dump helpers.
 - Added a basic test runner.
 - Verified `make test` passes.
 
@@ -43,41 +49,15 @@ v0.2 is in progress. The next focus is control flow.
 - `OP_JMP` treats its target as a byte offset into VM program memory.
 - `OP_JMP` rejects targets outside `program_size`.
 - `OP_JMP` rejects targets that do not land on an instruction boundary.
+- `OP_JZ` reads its condition register from `instr.src`.
+- `OP_JZ` jumps only when that register is zero.
+- `OP_JZ` uses the same byte-offset target rules as `OP_JMP`.
 
 ## Next Goal
 
-Continue v0.2 by implementing a conditional branch, such as `JZ`.
+Start v0.3 by improving debug visibility:
 
-Example program:
-
-```text
-MOVI r0, 1
-JZ   r0, 4
-MOVI r1, 7
-HALT
-```
-
-Because `r0` is not zero, the branch should not be taken:
-
-```text
-r1 = 7
-running = 0
-```
-
-Then add the taken case:
-
-```text
-MOVI r0, 0
-JZ   r0, 4
-MOVI r1, 7
-MOVI r2, 9
-HALT
-```
-
-Expected result:
-
-```text
-r1 = 0
-r2 = 9
-running = 0
-```
+- Add a test that calls `vm_step` directly.
+- Verify `pc` changes after each step.
+- Verify registers change after each step.
+- Consider adding a small instruction dump helper after that.

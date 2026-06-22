@@ -18,14 +18,17 @@ understand how a CPU fetches, decodes, and executes instructions.
 
 - [x] Add `JMP`.
 - [x] Add simple bounds checks for program counter changes.
-- [ ] Add `JZ` or another conditional branch.
-- [ ] Add tests for taken and skipped conditional branches.
+- [x] Add `JZ` or another conditional branch.
+- [x] Add tests for taken and skipped conditional branches.
 
 ## v0.3: Debugging Tools
 
-- Add single-step mode.
-- Add register dump output.
-- Add memory dump output.
+- [ ] Add direct `vm_step` tests.
+- [ ] Add single-step mode.
+- [x] Add register dump output.
+- [ ] Implement memory dump output.
+- [ ] Implement instruction dump output.
+- [x] Add function frames for memory and instruction dumps.
 
 ## v0.4: Assembler
 
