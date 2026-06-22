@@ -7,7 +7,7 @@ Last updated: 2026-06-22
 v0.1 is complete. The VM can build, run, execute a minimal program, handle basic
 arithmetic instructions, and reject invalid register indexes.
 
-v0.2 is ready to start. The next focus is control flow.
+v0.2 is in progress. The next focus is control flow.
 
 ## Completed
 
@@ -26,6 +26,8 @@ v0.2 is ready to start. The next focus is control flow.
 - Added arithmetic instruction tests.
 - Added register index checks before register access.
 - Added invalid register tests.
+- Implemented `JMP`.
+- Added normal and out-of-bounds `JMP` tests.
 - Added a basic test runner.
 - Verified `make test` passes.
 
@@ -37,32 +39,45 @@ v0.2 is ready to start. The next focus is control flow.
 
 - `MOVI` now writes `instr.immediate` into register `dst`.
 - Register indexes are checked before reading or writing `vm->regs`.
-- `OP_JMP` is still intentionally unimplemented.
+- `OP_JMP` reads its target from `instr.immediate`.
+- `OP_JMP` treats its target as a byte offset into VM program memory.
+- `OP_JMP` rejects targets outside `program_size`.
+- `OP_JMP` rejects targets that do not land on an instruction boundary.
 
 ## Next Goal
 
-Start v0.2 by implementing `JMP`.
+Continue v0.2 by implementing a conditional branch, such as `JZ`.
 
 Example program:
 
 ```text
 MOVI r0, 1
-JMP  4
-MOVI r0, 99
+JZ   r0, 4
 MOVI r1, 7
+HALT
+```
+
+Because `r0` is not zero, the branch should not be taken:
+
+```text
+r1 = 7
+running = 0
+```
+
+Then add the taken case:
+
+```text
+MOVI r0, 0
+JZ   r0, 4
+MOVI r1, 7
+MOVI r2, 9
 HALT
 ```
 
 Expected result:
 
 ```text
-r0 = 1
-r1 = 7
+r1 = 0
+r2 = 9
 running = 0
 ```
-
-Suggested encoding:
-
-- Store the jump target in `instr.immediate`.
-- Treat the target as a byte offset into VM program memory.
-- Reject targets outside `program_size` with `VM_ERR_PC_OUT_OF_BOUNDS`.

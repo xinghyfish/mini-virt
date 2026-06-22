@@ -16,10 +16,10 @@ understand how a CPU fetches, decodes, and executes instructions.
 
 ## v0.2: Control Flow
 
-- [ ] Add `JMP`.
-- [ ] Add simple bounds checks for program counter changes.
+- [x] Add `JMP`.
+- [x] Add simple bounds checks for program counter changes.
 - [ ] Add `JZ` or another conditional branch.
-- [ ] Add tests for taken and skipped branches.
+- [ ] Add tests for taken and skipped conditional branches.
 
 ## v0.3: Debugging Tools
 

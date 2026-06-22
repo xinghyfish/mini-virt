@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 
+static int is_valid_register(uint8_t reg)
+{
+    return reg < VM_REG_COUNT;
+}
+
 void vm_init(VM *vm)
 {
     memset(vm, 0, sizeof(*vm));
@@ -36,10 +41,6 @@ VMStatus vm_step(VM *vm)
     }
 
     memcpy(&instr, &vm->memory[vm->pc], sizeof(instr));
-    if (instr.src >= VM_REG_COUNT || instr.dst >= VM_REG_COUNT) {
-        vm->running = 0;
-        return VM_ERR_INVALID_REGISTER;
-    }
     vm->pc += sizeof(Instruction);
 
     switch ((Opcode)instr.opcode) {
@@ -47,19 +48,42 @@ VMStatus vm_step(VM *vm)
         vm->running = 0;
         return VM_OK;
     case OP_MOVI:
+        if (!is_valid_register(instr.dst)) {
+            vm->running = 0;
+            return VM_ERR_INVALID_REGISTER;
+        }
+
         vm->running = 1;
         vm->regs[instr.dst] = instr.immediate;
         return VM_OK;
     case OP_ADD:
+        if (!is_valid_register(instr.dst) || !is_valid_register(instr.src)) {
+            vm->running = 0;
+            return VM_ERR_INVALID_REGISTER;
+        }
+
         vm->running = 1;
         vm->regs[instr.dst] += vm->regs[instr.src];
         return VM_OK;
     case OP_SUB:
+        if (!is_valid_register(instr.dst) || !is_valid_register(instr.src)) {
+            vm->running = 0;
+            return VM_ERR_INVALID_REGISTER;
+        }
+
         vm->running = 1;
         vm->regs[instr.dst] -= vm->regs[instr.src];
         return VM_OK;
     case OP_JMP:
-        return VM_ERR_INVALID_OPCODE;
+        if (instr.immediate >= vm->program_size ||
+            instr.immediate % sizeof(Instruction) != 0) {
+            vm->running = 0;
+            return VM_ERR_PC_OUT_OF_BOUNDS;
+        }
+
+        vm->running = 1;
+        vm->pc = instr.immediate;
+        return VM_OK;
     default:
         vm->running = 0;
         return VM_ERR_INVALID_OPCODE;
