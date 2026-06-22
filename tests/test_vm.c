@@ -187,25 +187,75 @@ static void test_vm_jz_invalid_target(void)
 static void test_vm_step_executes_one_instruction(void)
 {
     // TODO(v0.3): load a short MOVI/ADD/HALT program.
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 7 },
+        { .opcode = OP_MOVI, .dst = 1, .immediate = 5 },
+        { .opcode = OP_ADD, .dst = 0, .src = 1 },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 4) == VM_OK);
     // TODO(v0.3): call vm_step once.
+    ASSERT_TRUE(vm_step(&vm) == VM_OK);
     // TODO(v0.3): assert that only the first instruction changed VM state.
-}
+    ASSERT_TRUE(vm.regs[0] == 7);
+    ASSERT_TRUE(vm.regs[1] == 0);
+    ASSERT_TRUE(vm.running == 1);
+    ASSERT_TRUE(vm.pc == sizeof(Instruction));
+    }
 
 static void test_vm_step_updates_pc(void)
 {
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 7 },
+        { .opcode = OP_JMP, .immediate = 3 * sizeof(Instruction) },
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 8 },
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 9 },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 5) == VM_OK);
     // TODO(v0.3): call vm_step and verify pc moves by sizeof(Instruction).
+    ASSERT_TRUE(vm_step(&vm) == VM_OK);
+    ASSERT_TRUE(vm.pc == sizeof(Instruction));
     // TODO(v0.3): include a jump instruction case where pc changes differently.
+    ASSERT_TRUE(vm_step(&vm) == VM_OK);
+    ASSERT_TRUE(vm.pc == 3 * sizeof(Instruction));
 }
 
 static void test_vm_dump_memory_exists(void)
 {
     // TODO(v0.3): call vm_dump_memory with a valid range.
+    VM vm;
+    const Instruction program[] = {
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 7 },
+        { .opcode = OP_JMP, .immediate = 3 * sizeof(Instruction) },
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 8 },
+        { .opcode = OP_MOVI, .dst = 0, .immediate = 9 },
+        { .opcode = OP_HALT },
+    };
+
+    vm_init(&vm);
+
+    ASSERT_TRUE(vm_load_program(&vm, program, 5) == VM_OK);
+    uint32_t start = 0;
+    size_t length = sizeof(program);
+    ASSERT_TRUE(vm_dump_memory(&vm, start, length) == VM_OK);
     // TODO(v0.3): later, assert invalid ranges return an error.
+    ASSERT_TRUE(vm_dump_memory(&vm, VM_MEMORY_SIZE + 1, 10) == VM_ERR_PC_OUT_OF_BOUNDS);
 }
 
 static void test_vm_dump_instruction_exists(void)
 {
     // TODO(v0.3): call vm_dump_instruction with one sample instruction.
+    const Instruction instr = { .opcode = OP_MOVI, .dst = 0, .immediate = 7 };
+    vm_dump_instruction(&instr);
     // TODO(v0.3): decide whether output should be visually inspected or captured.
 }
 

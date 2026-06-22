@@ -138,20 +138,30 @@ void vm_dump_registers(const VM *vm)
 
 VMStatus vm_dump_memory(const VM *vm, uint32_t start, size_t length)
 {
-    (void)vm;
-    (void)start;
-    (void)length;
-
-    // TODO(v0.3): print memory bytes from start to start + length.
     // TODO(v0.3): reject ranges outside VM_MEMORY_SIZE.
+    if (start + length > VM_MEMORY_SIZE) {
+        return VM_ERR_PC_OUT_OF_BOUNDS;
+    }
+    // TODO(v0.3): print memory bytes from start to start + length.
+    printf("Memory dump from %u to %zu:\n", start, start + length);
+    for (size_t i = 0; i < length; i++) {
+        if (i % 16 == 0) {
+            printf("%08zx:", start + i);
+        }
+        printf("  %02x", vm->memory[start + i]);
+        if (i % 16 == 15 || i == length - 1) {
+            printf("\n");
+        }
+    }
     return VM_OK;
 }
 
 void vm_dump_instruction(const Instruction *instruction)
 {
-    (void)instruction;
-
     // TODO(v0.3): print opcode and relevant fields for one instruction.
+    printf("Instruction dump:\n");
+    printf("opcode=%u dst=%u src=%u immediate=%u\n",
+           instruction->opcode, instruction->dst, instruction->src, instruction->immediate);
     // TODO(v0.3): format jump targets as instruction indexes and byte offsets.
 }
 
