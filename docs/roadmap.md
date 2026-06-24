@@ -23,15 +23,17 @@ understand how a CPU fetches, decodes, and executes instructions.
 
 ## v0.3: Debugging Tools
 
-- [ ] Add direct `vm_step` tests.
-- [ ] Add single-step mode.
+- [x] Add direct `vm_step` tests.
+- [x] Add single-step mode.
 - [x] Add register dump output.
-- [ ] Implement memory dump output.
-- [ ] Implement instruction dump output.
+- [x] Implement memory dump output.
+- [x] Implement instruction dump output.
 - [x] Add function frames for memory and instruction dumps.
 
 ## v0.4: Assembler
 
-- Parse a small text assembly format.
-- Translate labels into instruction addresses.
-- Generate bytecode for the VM.
+- [x] Add assembler module files.
+- [x] Parse a small text assembly format.
+- [ ] Translate labels into instruction addresses.
+- [x] Generate bytecode for the VM.
+- [x] Add assembler tests.

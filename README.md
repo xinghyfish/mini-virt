@@ -33,42 +33,55 @@ make test
 The tests are compiled with AddressSanitizer and UndefinedBehaviorSanitizer.
 This helps catch memory bugs early while you are learning C.
 
+You can also run each test group separately:
+
+```sh
+make test-vm
+make test-assembler
+```
+
 ## Current Progress
 
 See `docs/progress.md` for the latest learning checkpoint.
 See `docs/instructions.md` for the instruction reference.
 See `docs/debugging.md` for the v0.3 debugging helper checklist.
+See `docs/assembler.md` for the v0.4 assembler plan.
 
 Current status:
 
 - v0.1 is complete.
 - v0.2 is complete.
-- v0.3 is in progress.
+- v0.3 is complete.
+- v0.4 is in progress: basic assembler is implemented, label support is next.
 - The VM builds and runs.
 - `HALT` is implemented and tested.
 - `MOVI`, `ADD`, and `SUB` are implemented and tested.
 - `JMP` is implemented and tested.
 - `JZ` is implemented and tested.
+- direct `vm_step` tests are implemented.
+- memory and instruction dump helpers are implemented.
 - Register index checks are implemented.
 - Invalid register tests are implemented.
 
 ## Current Implementation Goal
 
-Start v0.3 by testing single-step execution with `vm_step`.
+Continue v0.4 by adding label support.
 
 ```text
-MOVI r0, 7
-MOVI r1, 5
-ADD  r0, r1
+loop:
+SUB r0, r1
+JZ r0, done
+JMP loop
+done:
 HALT
 ```
 
 Expected behavior:
 
-- call `vm_step` once and verify `r0 == 7`
-- call `vm_step` again and verify `r1 == 5`
-- call `vm_step` again and verify `r0 == 12`
-- call `vm_step` again and verify the VM stops
+- collect label definitions and their instruction indexes
+- resolve labels used by `JMP` and `JZ`
+- reject unknown labels
+- convert label targets into byte offsets
 
 ## Suggested Study Order
 

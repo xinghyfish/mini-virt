@@ -9,7 +9,11 @@ arithmetic instructions, and reject invalid register indexes.
 
 v0.2 is complete. The VM supports unconditional and conditional control flow.
 
-v0.3 is in progress. The next focus is debugging tools.
+v0.3 is complete. The VM now has basic debugging visibility through direct
+single-step tests, register dumps, memory dumps, and instruction dumps.
+
+v0.4 is in progress. The basic assembler can parse the current instruction set
+and generate VM bytecode. The next focus is label support.
 
 ## Completed
 
@@ -32,8 +36,18 @@ v0.3 is in progress. The next focus is debugging tools.
 - Added normal and out-of-bounds `JMP` tests.
 - Implemented `JZ`.
 - Added taken, not-taken, invalid-register, and invalid-target `JZ` tests.
-- Added v0.3 function frames for memory and instruction dumps.
-- Added v0.3 test placeholders for single-step and dump helpers.
+- Added direct `vm_step` tests.
+- Added `pc` update tests for normal and jump instructions.
+- Implemented memory dump output.
+- Implemented instruction dump output.
+- Added tests that call memory and instruction dump helpers.
+- Added assembler module frames.
+- Added assembler test placeholders.
+- Added `make test-assembler`.
+- Implemented `asm_parse_line`.
+- Implemented `asm_parse_program`.
+- Added assembler tests for `HALT`, `MOVI`, `ADD`, `JMP`, `JZ`, unknown
+  opcodes, invalid arguments, comments, and output buffer limits.
 - Added a basic test runner.
 - Verified `make test` passes.
 
@@ -52,12 +66,17 @@ v0.3 is in progress. The next focus is debugging tools.
 - `OP_JZ` reads its condition register from `instr.src`.
 - `OP_JZ` jumps only when that register is zero.
 - `OP_JZ` uses the same byte-offset target rules as `OP_JMP`.
+- `vm_step` can now be tested directly to inspect VM state after each
+  instruction.
+- `vm_dump_memory` prints VM memory bytes for a requested range.
+- `vm_dump_instruction` prints one decoded instruction.
 
 ## Next Goal
 
-Start v0.3 by improving debug visibility:
+Continue v0.4 by adding label support:
 
-- Add a test that calls `vm_step` directly.
-- Verify `pc` changes after each step.
-- Verify registers change after each step.
-- Consider adding a small instruction dump helper after that.
+- Parse label definitions such as `loop:`.
+- Store label names and instruction indexes in a small table.
+- Resolve `JMP label` and `JZ r0, label`.
+- Convert label targets into byte offsets.
+- Add tests for forward labels, backward labels, and unknown labels.
