@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "assembler.h"
 
 #define ASSERT_TRUE(expr)                                                        \
@@ -123,6 +124,85 @@ static void test_asm_parse_program_rejects_invalid_source(void)
     ASSERT_TRUE(res == ASM_ERR_INVALID_ARGUMENT);
 }
 
+static void test_asm_parse_normal_label(void)
+{
+    const char program_str[] = 
+        "start:\n"
+        "JMP done\n"
+        "ADD r0, r1\n"
+        "JZ r0, start ; This is a comment\n"
+        "done:\n"
+        "HALT\n"
+        "; This is just a comment line";
+    Instruction program[10];
+    AsmResult result;
+    AsmStatus res = asm_parse_program(program_str, program, 4, &result);
+    ASSERT_TRUE(res == ASM_OK);
+    ASSERT_TRUE(program[0].immediate == 3 * sizeof(Instruction));
+    ASSERT_TRUE(program[2].immediate == 0);
+}
+
+static void test_asm_parse_backward_label(void)
+{
+    const char program_str[] =
+        "loop:\n"
+        "SUB r0, r1\n"
+        "JMP loop\n";
+    Instruction program[10];
+    AsmResult result;
+    AsmStatus res = asm_parse_program(program_str, program, 10, &result);
+    ASSERT_TRUE(res == ASM_OK);
+    ASSERT_TRUE(result.instruction_count == 2);
+    ASSERT_TRUE(program[1].opcode == OP_JMP);
+    ASSERT_TRUE(program[1].immediate == 0);
+}
+
+static void test_asm_parse_duplicate_label(void)
+{
+    const char program_str[] = 
+        "start:\n"
+        "MOVI r0, 7\n"
+        "ADD r0, r1\n"
+        "start:\n"
+        "HALT\n"
+        "; This is just a comment line";
+    Instruction program[10];
+    AsmResult result;
+    AsmStatus res = asm_parse_program(program_str, program, 3, &result);
+    ASSERT_TRUE(res == ASM_ERR_DUPLICATE_LABEL);
+}
+
+static void test_asm_parse_unknown_label(void)
+{
+    const char program_str[] = 
+        "start:\n"
+        "MOVI r0, 7\n"
+        "ADD r0, r1\n"
+        "JMP end\n"
+        "HALT\n"
+        "; This is just a comment line";
+    Instruction program[10];
+    AsmResult result;
+    AsmStatus res = asm_parse_program(program_str, program, 4, &result);
+    ASSERT_TRUE(res == ASM_ERR_UNKNOWN_LABEL);
+}
+
+static void test_asm_parse_too_many_labels(void)
+{
+    char program_str[2048] = "";
+    Instruction program[10];
+    AsmResult result;
+
+    for (size_t i = 0; i <= ASM_MAX_LABELS; i++) {
+        char line[32];
+        snprintf(line, sizeof(line), "label%zu:\n", i);
+        strcat(program_str, line);
+    }
+
+    AsmStatus res = asm_parse_program(program_str, program, 10, &result);
+    ASSERT_TRUE(res == ASM_ERR_TOO_MANY_LABELS);
+}
+
 int main(void)
 {
     test_asm_parse_line_halt();
@@ -134,6 +214,11 @@ int main(void)
     test_asm_parse_program_counts_instructions();
     test_asm_parse_program_rejects_small_output_buffer();
     test_asm_parse_program_rejects_invalid_source();
+    test_asm_parse_normal_label();
+    test_asm_parse_backward_label();
+    test_asm_parse_duplicate_label();
+    test_asm_parse_unknown_label();
+    test_asm_parse_too_many_labels();
 
     puts("assembler test placeholders passed");
     return 0;

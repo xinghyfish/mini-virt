@@ -58,6 +58,9 @@ JMP 3 -> immediate = 3 * sizeof(Instruction)
 7. Parse `JZ`.
 8. Parse a multi-line program.
 9. Add comments and blank line handling.
+10. Add label support with a two-pass assembler.
+
+See `docs/labels.md` for the next learning node.
 
 ## Comments
 

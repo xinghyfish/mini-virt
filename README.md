@@ -46,6 +46,7 @@ See `docs/progress.md` for the latest learning checkpoint.
 See `docs/instructions.md` for the instruction reference.
 See `docs/debugging.md` for the v0.3 debugging helper checklist.
 See `docs/assembler.md` for the v0.4 assembler plan.
+See `docs/labels.md` for the next label-support learning node.
 
 Current status:
 

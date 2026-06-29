@@ -76,6 +76,7 @@ and generate VM bytecode. The next focus is label support.
 Continue v0.4 by adding label support:
 
 - Parse label definitions such as `loop:`.
+- Use a two-pass assembler: collect labels first, emit instructions second.
 - Store label names and instruction indexes in a small table.
 - Resolve `JMP label` and `JZ r0, label`.
 - Convert label targets into byte offsets.
