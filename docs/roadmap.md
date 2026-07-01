@@ -34,6 +34,16 @@ understand how a CPU fetches, decodes, and executes instructions.
 
 - [x] Add assembler module files.
 - [x] Parse a small text assembly format.
-- [ ] Translate labels into instruction addresses.
+- [x] Translate labels into instruction addresses.
 - [x] Generate bytecode for the VM.
 - [x] Add assembler tests.
+- [x] Add assembler-to-VM integration tests.
+
+## v0.5: Executable Format and Loader
+
+- [ ] Define a small executable file format.
+- [ ] Add loader module files.
+- [ ] Save assembled bytecode to a file.
+- [ ] Load bytecode from a file.
+- [ ] Set VM entry point from the executable header.
+- [ ] Add loader tests for valid and invalid files.

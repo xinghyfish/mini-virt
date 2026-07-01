@@ -38,6 +38,7 @@ You can also run each test group separately:
 ```sh
 make test-vm
 make test-assembler
+make test-integration
 ```
 
 ## Current Progress
@@ -47,13 +48,15 @@ See `docs/instructions.md` for the instruction reference.
 See `docs/debugging.md` for the v0.3 debugging helper checklist.
 See `docs/assembler.md` for the v0.4 assembler plan.
 See `docs/labels.md` for the next label-support learning node.
+See `docs/integration.md` for the assembler-to-VM integration node.
 
 Current status:
 
 - v0.1 is complete.
 - v0.2 is complete.
 - v0.3 is complete.
-- v0.4 is in progress: basic assembler is implemented, label support is next.
+- v0.4 is complete.
+- v0.5 is ready to start: executable format and loader.
 - The VM builds and runs.
 - `HALT` is implemented and tested.
 - `MOVI`, `ADD`, and `SUB` are implemented and tested.
@@ -66,23 +69,22 @@ Current status:
 
 ## Current Implementation Goal
 
-Continue v0.4 by adding label support.
+Start v0.5 by designing a small executable format and loader.
 
 ```text
-loop:
-SUB r0, r1
-JZ r0, done
-JMP loop
-done:
-HALT
+magic
+version
+entry
+instruction_count
+instructions...
 ```
 
 Expected behavior:
 
-- collect label definitions and their instruction indexes
-- resolve labels used by `JMP` and `JZ`
-- reject unknown labels
-- convert label targets into byte offsets
+- write assembled bytecode into a file
+- load that file back into VM memory
+- validate file headers before loading
+- reject malformed or truncated files
 
 ## Suggested Study Order
 
