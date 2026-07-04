@@ -15,7 +15,7 @@ single-step tests, register dumps, memory dumps, and instruction dumps.
 v0.4 is complete. The assembler can parse the current instruction set, resolve
 labels, generate VM bytecode, and run assembly source end-to-end on the VM.
 
-v0.5 is ready to start. The next focus is a small executable format and loader.
+v0.5 is in progress. The next focus is a small executable format and loader.
 
 ## Completed
 
@@ -55,6 +55,9 @@ v0.5 is ready to start. The next focus is a small executable format and loader.
 - Implemented assembler-to-VM integration with `runner_run_source`.
 - Added integration tests for successful execution, assembler errors, and VM
   execution errors.
+- Added loader module frames.
+- Added loader test placeholders.
+- Added `make test-loader`.
 - Added a basic test runner.
 - Verified `make test` passes.
 

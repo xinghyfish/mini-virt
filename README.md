@@ -39,6 +39,7 @@ You can also run each test group separately:
 make test-vm
 make test-assembler
 make test-integration
+make test-loader
 ```
 
 ## Current Progress
@@ -56,7 +57,7 @@ Current status:
 - v0.2 is complete.
 - v0.3 is complete.
 - v0.4 is complete.
-- v0.5 is ready to start: executable format and loader.
+- v0.5 is in progress: executable format and loader.
 - The VM builds and runs.
 - `HALT` is implemented and tested.
 - `MOVI`, `ADD`, and `SUB` are implemented and tested.

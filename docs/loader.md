@@ -51,11 +51,37 @@ typedef enum {
 } LoadStatus;
 ```
 
+Current framework files:
+
+- `src/loader.h`
+- `src/loader.c`
+- `tests/test_loader.c`
+
 ```c
 LoadStatus loader_load_file(const char *path, Instruction *out_program,
                             size_t max_instructions, size_t *out_count,
                             uint32_t *out_entry);
 ```
+
+The framework also includes:
+
+```c
+LoadStatus loader_write_file(const char *path, const Instruction *program,
+                             size_t instruction_count, uint32_t entry);
+```
+
+`loader_write_file` exists so tests can create `.mve` files without hand-writing
+binary blobs each time.
+
+## Suggested Implementation Order
+
+1. Implement argument checks in `loader_write_file`.
+2. Write only the header and test that the file exists.
+3. Write the instruction array after the header.
+4. Implement argument checks in `loader_load_file`.
+5. Read and validate the header.
+6. Read the instruction array.
+7. Add negative tests one file shape at a time.
 
 ## Tests To Add
 

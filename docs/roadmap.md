@@ -42,8 +42,9 @@ understand how a CPU fetches, decodes, and executes instructions.
 ## v0.5: Executable Format and Loader
 
 - [ ] Define a small executable file format.
-- [ ] Add loader module files.
+- [x] Add loader module files.
 - [ ] Save assembled bytecode to a file.
 - [ ] Load bytecode from a file.
 - [ ] Set VM entry point from the executable header.
+- [x] Add loader test placeholders.
 - [ ] Add loader tests for valid and invalid files.
